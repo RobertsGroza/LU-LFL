@@ -1,24 +1,41 @@
 import React, { useCallback, useContext } from "react";
 import { withRouter, Redirect } from "react-router";
 import app from "../../base";
+import './Login.css';
 import { AuthContext } from "Auth";
-import { Form, Icon, Input, Button } from 'antd';
+import { Form, Icon, Input, Button, notification } from 'antd';
+
+const failedLogInNotification = () => {
+  notification.open({
+    message: 'Nepareizs lietotājvārds vai parole!',
+    description: 'Lūdzu, mēģiniet vēlreiz!',
+    icon: <Icon type="frown" style={{ color: 'red' }} />
+  });
+};
+
+const successfulLogInNotification = () => {
+  notification.open({
+    message: 'Autorizācija veiksmīga!',
+    icon: <Icon type="smile" style={{ color: 'green' }} />
+  });
+};
 
 const NormalLoginForm = ({form, history}) => {
   const handleLogin = useCallback(
-    async event => {
+    event => {
       event.preventDefault();
-      let email = form.getFieldValue('username');
-      let password = form.getFieldValue('password');
-
-      try {
-        await app
-          .auth()
-          .signInWithEmailAndPassword(email, password);
-        history.push("/");
-      } catch (error) {
-        alert(error);
-      }
+      form.validateFields(async (err, values) => {
+        if (!err) {
+          try {
+            await app.auth().signInWithEmailAndPassword(values.email, values.password);
+            successfulLogInNotification();
+            history.push("/");
+          } catch (error) {
+            console.error(error);
+            failedLogInNotification();
+          }
+        }
+      });
     },
     [history]
   );
@@ -31,11 +48,13 @@ const NormalLoginForm = ({form, history}) => {
     return <Redirect to="/admin" />;
   }
 
-  return (
-    <Form onSubmit={handleLogin} className="login-form">
+  return <div className="login-form">
+    <h1>Ienākt</h1>
+
+    <Form onSubmit={handleLogin}>
       <Form.Item>
-        {getFieldDecorator('username', {
-          rules: [{ required: true, message: 'Please input your username!' }],
+        {getFieldDecorator('email', {
+          rules: [{ required: true, message: 'Lūdzu ievadiet e-pastu!' }],
         })(
           <Input
             prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -44,7 +63,9 @@ const NormalLoginForm = ({form, history}) => {
         )}
       </Form.Item>
       <Form.Item>
-        {getFieldDecorator('password')(
+        {getFieldDecorator('password', {
+          rules: [{ required: true, message: 'Lūdzu ievadiet paroli!' }],
+        })(
         <Input
           prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
           type="password"
@@ -54,11 +75,12 @@ const NormalLoginForm = ({form, history}) => {
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit" className="login-form-button">
-          Ielogoties
+          Ienākt
+          <Icon type="login"/>
         </Button>
       </Form.Item>
     </Form>
-  );
+  </div>;
 }
 
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(NormalLoginForm);

@@ -22,7 +22,7 @@ const Main = ({ history }) => {
   }
 
   return <>
-    <Layout className="layout" style={{ height: '100vh' }}>
+    <Layout style={{ height: '100vh' }}>
       <Header>
         <div className="logo">
           <img src="ball.png" height="30"/>
@@ -69,7 +69,7 @@ const Main = ({ history }) => {
       </Header>
       <Content style={{ padding: '0 50px' }}>
         <Row>
-          <Col span={20} offset={2} style={{marginTop: '25px'}}>
+          <Col span={20} offset={2} className="container">
             <Switch>
                 <PrivateRoute exact path="/admin" component={Administration} />
                 <Route exact path="/login" component={Login} />
