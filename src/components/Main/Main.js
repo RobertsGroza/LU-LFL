@@ -70,9 +70,7 @@ const Main = ({ history }) => {
       </Header>
       <Content>
         <Switch>
-            <PrivateRoute exact path="/admin">
-              <Container><Administration/></Container>
-            </PrivateRoute>
+            <PrivateRoute exact path="/admin" component={Administration} />
             <Route exact path="/login">
               <Container><Login/></Container>
             </Route>
