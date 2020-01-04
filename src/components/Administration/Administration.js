@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import { Modal, Button, Upload, Icon } from 'antd';
+import { Modal, Button, Upload, Icon, Spin } from 'antd';
 import Container from 'components/Container/Container';
 import FileProcessor from 'utils/fileProcessor';
 
 const Administration = () => {
     const [showFileUploadModal, setShowFileUploadModal] = useState(false);
     const [fileList, setFileList] = useState([]);
-    const [fileProcessingInProgress, setFileProcessingInProgress] = useState(true);
+    const [fileProcessingInProgress, setFileProcessingInProgress] = useState(false);
 
     const toggleModal = () => {
         setShowFileUploadModal(!showFileUploadModal);
@@ -51,19 +51,24 @@ const Administration = () => {
             </Button>
 
             <Modal
+                visible={showFileUploadModal}
                 title="Spēļu protokolu augšupielāde"
                 cancelText="Atcelt"
                 okText="Veikt augšupielādi"
-                okButtonProps={{icon: "upload"}}
-                visible={showFileUploadModal}
+                okButtonProps={{icon: "upload", disabled: fileProcessingInProgress}}
+                cancelButtonProps={{disabled: fileProcessingInProgress}}
+                closable={!fileProcessingInProgress}
+                maskClosable={!fileProcessingInProgress}
                 onCancel={() => toggleModal()}
                 onOk={() => processFileList()}
             >
-                <Upload {...uploadProps}>
-                    <Button>
-                        <Icon type="file-add"/> Pievienot failus
-                    </Button>
-                </Upload>
+                <Spin spinning={fileProcessingInProgress} tip="Apstrādā protokolus..." size="large">
+                    <Upload {...uploadProps}>
+                        <Button>
+                            <Icon type="file-add"/> Pievienot failus
+                        </Button>
+                    </Upload>
+                </Spin>
             </Modal>
         </Container>
     )
