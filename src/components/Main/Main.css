@@ -1,0 +1,20 @@
+.logo {
+    width: 90px;
+    height: 31px;
+    margin: 16px 24px 16px 0;
+    float: left;
+    display: flex;
+}
+
+.logo img {
+    align-self: center;
+}
+
+.logo p {
+    margin: 0;
+    align-self: center;
+    margin-left: 10px;
+    color: white;
+    font-weight: 600;
+    font-size: 28px;
+}

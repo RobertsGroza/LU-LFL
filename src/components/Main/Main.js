@@ -9,6 +9,7 @@ import { Layout, Menu, Icon, Row, Col } from 'antd';
 import PrivateRoute from "PrivateRoute";
 import { AuthContext } from "Auth";
 import app from "../../base";
+import './Main.css';
 
 const { Header, Content, Footer } = Layout;
 
@@ -23,6 +24,10 @@ const Main = ({ history }) => {
   return <>
     <Layout className="layout" style={{ height: '100vh' }}>
       <Header>
+        <div className="logo">
+          <img src="ball.png" height="30"/>
+          <p>LFL</p>
+        </div>
         <Menu
           theme="dark"
           mode="horizontal"
