@@ -4,8 +4,9 @@ import Standings from 'components/Standings/Standings';
 import Stats from 'components/Stats/Stats';
 import Administration from 'components/Administration/Administration';
 import Login from 'components/Login/Login';
+import Container from 'components/Container/Container';
 import { Switch, Route, Redirect, withRouter, NavLink } from 'react-router-dom';
-import { Layout, Menu, Icon, Row, Col } from 'antd';
+import { Layout, Menu, Icon } from 'antd';
 import PrivateRoute from "PrivateRoute";
 import { AuthContext } from "Auth";
 import app from "../../base";
@@ -22,8 +23,8 @@ const Main = ({ history }) => {
   }
 
   return <>
-    <Layout style={{ height: '100vh' }}>
-      <Header>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header className="app-header">
         <div className="logo">
           <img src="ball.png" height="30"/>
           <p>LFL</p>
@@ -67,19 +68,23 @@ const Main = ({ history }) => {
           }
         </Menu>
       </Header>
-      <Content style={{ padding: '0 50px' }}>
-        <Row>
-          <Col span={20} offset={2} className="container">
-            <Switch>
-                <PrivateRoute exact path="/admin" component={Administration} />
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/standings" component={Standings} />
-                <Route exact path="/stats" component={Stats} />
-                <Route exact path="/" component={Home} />
-                <Redirect to="/" />
-            </Switch> 
-          </Col>
-        </Row>
+      <Content>
+        <Switch>
+            <PrivateRoute exact path="/admin">
+              <Container><Administration/></Container>
+            </PrivateRoute>
+            <Route exact path="/login">
+              <Container><Login/></Container>
+            </Route>
+            <Route exact path="/standings">
+              <Container><Standings/></Container>
+            </Route>
+            <Route exact path="/stats">
+              <Container><Stats/></Container>
+            </Route>
+            <Route exact path="/" component={Home} />
+            <Redirect to="/" />
+        </Switch>
       </Content>
       <Footer style={{ textAlign: 'center' }}>Autors: Roberts Groza rg11080</Footer>
     </Layout>

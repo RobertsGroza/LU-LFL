@@ -6,17 +6,15 @@ import { AuthContext } from "Auth";
 import { Form, Icon, Input, Button, notification } from 'antd';
 
 const failedLogInNotification = () => {
-  notification.open({
+  notification.error({
     message: 'Nepareizs lietotājvārds vai parole!',
     description: 'Lūdzu, mēģiniet vēlreiz!',
-    icon: <Icon type="frown" style={{ color: 'red' }} />
   });
 };
 
 const successfulLogInNotification = () => {
-  notification.open({
+  notification.success({
     message: 'Autorizācija veiksmīga!',
-    icon: <Icon type="smile" style={{ color: 'green' }} />
   });
 };
 

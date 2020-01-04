@@ -1,0 +1,19 @@
+.banner {
+    position: relative;
+}
+
+.banner img {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 64px);
+    object-fit: cover;
+}
+
+.banner h1 {
+    position: absolute;
+    top: 30vh;
+    left: 150px;
+    font-size: 72px;
+    font-weight: 900;
+    color: white;
+}
