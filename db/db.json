@@ -1,6 +1,411 @@
 {
-    "teams": [],
-    "players": [],
-    "games": [],
-    "referees": []
+  "teams": [
+    {
+      "name": "Skolmeistari",
+      "id": 1
+    },
+    {
+      "name": "Veiklie",
+      "id": 2
+    },
+    {
+      "name": "Barcelona",
+      "id": 3
+    }
+  ],
+  "players": [
+    {
+      "name": "Nils",
+      "lastName": "Debess",
+      "nr": 9,
+      "role": "A",
+      "teamId": 1,
+      "id": 1
+    },
+    {
+      "name": "Vilhelms",
+      "lastName": "Zibens",
+      "nr": 21,
+      "role": "A",
+      "teamId": 1,
+      "id": 2
+    },
+    {
+      "name": "Vidmants",
+      "lastName": "Rausis",
+      "nr": 22,
+      "role": "V",
+      "teamId": 1,
+      "id": 3
+    },
+    {
+      "name": "Janka",
+      "lastName": "Zibens",
+      "nr": 25,
+      "role": "A",
+      "teamId": 1,
+      "id": 4
+    },
+    {
+      "name": "Rihards",
+      "lastName": "Palodze",
+      "nr": 28,
+      "role": "U",
+      "teamId": 1,
+      "id": 5
+    },
+    {
+      "name": "Ciltvairis",
+      "lastName": "Paraugs",
+      "nr": 30,
+      "role": "A",
+      "teamId": 1,
+      "id": 6
+    },
+    {
+      "name": "Bo",
+      "lastName": "Antena",
+      "nr": 33,
+      "role": "A",
+      "teamId": 1,
+      "id": 7
+    },
+    {
+      "name": "Linards",
+      "lastName": "Grants",
+      "nr": 34,
+      "role": "U",
+      "teamId": 1,
+      "id": 8
+    },
+    {
+      "name": "Francis",
+      "lastName": "Rokturis",
+      "nr": 36,
+      "role": "U",
+      "teamId": 1,
+      "id": 9
+    },
+    {
+      "name": "Einars",
+      "lastName": "Svilpe",
+      "nr": 39,
+      "role": "A",
+      "teamId": 1,
+      "id": 10
+    },
+    {
+      "name": "Anderss",
+      "lastName": "Zirnis",
+      "nr": 41,
+      "role": "V",
+      "teamId": 1,
+      "id": 11
+    },
+    {
+      "name": "Rolands",
+      "lastName": "Kompass",
+      "nr": 44,
+      "role": "A",
+      "teamId": 1,
+      "id": 12
+    },
+    {
+      "name": "Kens",
+      "lastName": "Kabacis",
+      "nr": 47,
+      "role": "U",
+      "teamId": 1,
+      "id": 13
+    },
+    {
+      "name": "Saulvedis",
+      "lastName": "Pitagors",
+      "nr": 11,
+      "role": "U",
+      "teamId": 2,
+      "id": 14
+    },
+    {
+      "name": "Janka",
+      "lastName": "Svilpe",
+      "nr": 13,
+      "role": "A",
+      "teamId": 2,
+      "id": 15
+    },
+    {
+      "name": "Harijs",
+      "lastName": "Rums",
+      "nr": 16,
+      "role": "A",
+      "teamId": 2,
+      "id": 16
+    },
+    {
+      "name": "Ciltvairis",
+      "lastName": "Eholots",
+      "nr": 18,
+      "role": "A",
+      "teamId": 2,
+      "id": 17
+    },
+    {
+      "name": "Gints",
+      "lastName": "Pitagors",
+      "nr": 27,
+      "role": "V",
+      "teamId": 2,
+      "id": 18
+    },
+    {
+      "name": "Vilhelms",
+      "lastName": "Zemene",
+      "nr": 29,
+      "role": "U",
+      "teamId": 2,
+      "id": 19
+    },
+    {
+      "name": "Tims",
+      "lastName": "Pipars",
+      "nr": 36,
+      "role": "U",
+      "teamId": 2,
+      "id": 20
+    },
+    {
+      "name": "Ciltvairis",
+      "lastName": "Paraugs",
+      "nr": 38,
+      "role": "U",
+      "teamId": 2,
+      "id": 21
+    },
+    {
+      "name": "Saulvedis",
+      "lastName": "Draugs",
+      "nr": 40,
+      "role": "A",
+      "teamId": 2,
+      "id": 22
+    },
+    {
+      "name": "Almonds",
+      "lastName": "Kompass",
+      "nr": 43,
+      "role": "U",
+      "teamId": 2,
+      "id": 23
+    },
+    {
+      "name": "Saulvedis",
+      "lastName": "Pudele",
+      "nr": 52,
+      "role": "U",
+      "teamId": 2,
+      "id": 24
+    },
+    {
+      "name": "Saulvedis",
+      "lastName": "Jumts",
+      "nr": 55,
+      "role": "U",
+      "teamId": 2,
+      "id": 25
+    },
+    {
+      "name": "Vidmants",
+      "lastName": "Rums",
+      "nr": 58,
+      "role": "U",
+      "teamId": 2,
+      "id": 26
+    },
+    {
+      "name": "Valters",
+      "lastName": "Zilonis",
+      "nr": 63,
+      "role": "A",
+      "teamId": 2,
+      "id": 27
+    },
+    {
+      "name": "Armands",
+      "lastName": "Skuja",
+      "nr": 66,
+      "role": "U",
+      "teamId": 2,
+      "id": 28
+    },
+    {
+      "name": "Igors",
+      "lastName": "Rokturis",
+      "nr": 71,
+      "role": "V",
+      "teamId": 2,
+      "id": 29
+    },
+    {
+      "name": "Sidney",
+      "lastName": "Sam",
+      "nr": 16,
+      "role": "V",
+      "teamId": 3,
+      "id": 30
+    },
+    {
+      "name": "Marian",
+      "lastName": "Cisovsky",
+      "nr": 17,
+      "role": "A",
+      "teamId": 3,
+      "id": 31
+    },
+    {
+      "name": "Marco",
+      "lastName": "Verratti",
+      "nr": 24,
+      "role": "U",
+      "teamId": 3,
+      "id": 32
+    },
+    {
+      "name": "Mats",
+      "lastName": "Hummels",
+      "nr": 27,
+      "role": "A",
+      "teamId": 3,
+      "id": 33
+    },
+    {
+      "name": "Juan",
+      "lastName": "Quintero",
+      "nr": 33,
+      "role": "U",
+      "teamId": 3,
+      "id": 34
+    },
+    {
+      "name": "Marcelo",
+      "lastName": "D�az",
+      "nr": 37,
+      "role": "U",
+      "teamId": 3,
+      "id": 35
+    },
+    {
+      "name": "Domenico",
+      "lastName": "Criscito",
+      "nr": 39,
+      "role": "A",
+      "teamId": 3,
+      "id": 36
+    },
+    {
+      "name": "Lucian",
+      "lastName": "Filip",
+      "nr": 55,
+      "role": "A",
+      "teamId": 3,
+      "id": 37
+    },
+    {
+      "name": "Javier",
+      "lastName": "Saviola",
+      "nr": 56,
+      "role": "V",
+      "teamId": 3,
+      "id": 38
+    },
+    {
+      "name": "Marco",
+      "lastName": "Streller",
+      "nr": 64,
+      "role": "A",
+      "teamId": 3,
+      "id": 39
+    },
+    {
+      "name": "Roman",
+      "lastName": "Weidenfeller",
+      "nr": 73,
+      "role": "U",
+      "teamId": 3,
+      "id": 40
+    },
+    {
+      "name": "Marco",
+      "lastName": "Amelia",
+      "nr": 75,
+      "role": "A",
+      "teamId": 3,
+      "id": 41
+    },
+    {
+      "name": "Alex",
+      "lastName": "Sandro",
+      "nr": 84,
+      "role": "A",
+      "teamId": 3,
+      "id": 42
+    },
+    {
+      "name": "Filip",
+      "lastName": "Djuricic",
+      "nr": 89,
+      "role": "U",
+      "teamId": 3,
+      "id": 43
+    },
+    {
+      "name": "Silvestre",
+      "lastName": "Varela",
+      "nr": 94,
+      "role": "A",
+      "teamId": 3,
+      "id": 44
+    },
+    {
+      "name": "Gast�n",
+      "lastName": "Sauro",
+      "nr": 96,
+      "role": "A",
+      "teamId": 3,
+      "id": 45
+    }
+  ],
+  "games": [],
+  "referees": [
+    {
+      "name": "Marko",
+      "lastName": "H�nninen",
+      "id": 1
+    },
+    {
+      "name": "Pedro",
+      "lastName": "Prompa",
+      "id": 2
+    },
+    {
+      "name": "Dennis",
+      "lastName": "Antamo",
+      "id": 3
+    },
+    {
+      "name": "Fredis",
+      "lastName": "Fvilpe",
+      "id": 4
+    },
+    {
+      "name": "Rihards",
+      "lastName": "Rausis",
+      "id": 5
+    },
+    {
+      "name": "Jukka",
+      "lastName": "Honkanen",
+      "id": 6
+    }
+  ]
 }
