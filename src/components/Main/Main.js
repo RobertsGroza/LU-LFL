@@ -26,7 +26,7 @@ const Main = ({ history }) => {
     <Layout style={{ minHeight: '100vh' }}>
       <Header className="app-header">
         <div className="logo">
-          <img src="ball.png" height="30"/>
+          <img src="ball.png" alt="ball-logo" height="30"/>
           <p>LFL</p>
         </div>
         <Menu

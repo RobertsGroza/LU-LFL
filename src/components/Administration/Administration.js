@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import './Administration.css';
-import { Modal, Button, Upload, Icon, message } from 'antd';
+import { Modal, Button, Upload, Icon } from 'antd';
 import Container from 'components/Container/Container';
+import FileProcessor from 'utils/fileProcessor';
 
 const Administration = () => {
     const [showFileUploadModal, setShowFileUploadModal] = useState(false);
@@ -12,17 +12,9 @@ const Administration = () => {
         setShowFileUploadModal(!showFileUploadModal);
     }
 
-    const processFileList = () => {
+    const processFileList = async () => {
         setFileProcessingInProgress(true);
-
-        fileList.map(file => {
-            const reader = new FileReader();
-            reader.readAsText(file.originFileObj);
-            reader.onload = async () => {
-                console.log('reader result: ', JSON.parse(reader.result));
-            }
-        })
-
+        await FileProcessor(fileList);
         setShowFileUploadModal(false);
         setFileProcessingInProgress(false);
         setFileList([]);
@@ -57,7 +49,6 @@ const Administration = () => {
             <Button type="primary" onClick={() => toggleModal()} icon="upload">
                 Augšupielādēt spēļu protokolus
             </Button>
-
 
             <Modal
                 title="Spēļu protokolu augšupielāde"

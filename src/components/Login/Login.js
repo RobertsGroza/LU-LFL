@@ -9,12 +9,14 @@ const failedLogInNotification = () => {
   notification.error({
     message: 'Nepareizs lietotājvārds vai parole!',
     description: 'Lūdzu, mēģiniet vēlreiz!',
+    duration: 3
   });
 };
 
 const successfulLogInNotification = () => {
   notification.success({
     message: 'Autorizācija veiksmīga!',
+    duration: 3
   });
 };
 
@@ -35,7 +37,7 @@ const NormalLoginForm = ({form, history}) => {
         }
       });
     },
-    [history]
+    [form, history]
   );
 
   const { getFieldDecorator } = form;
