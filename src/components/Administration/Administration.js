@@ -70,7 +70,7 @@ const Administration = () => {
             key: 'status',
             render: status => (
                 <Tag color={status === 'success' ? 'green' : 'volcano'} key={status}>
-                    {status === 'success' ? 'apstrādāts' : 'neapstrādāts'}
+                    {status === 'success' ? 'apstrādāts' : 'noraidīts'}
                 </Tag>
             )
         },
@@ -102,6 +102,7 @@ const Administration = () => {
                 dataSource={protocolHistoryData}
                 columns={columns}
                 loading={protocolHistoryLoading}
+                rowKey='id'
             />
 
             <Modal

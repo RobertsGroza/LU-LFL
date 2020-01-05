@@ -53,6 +53,7 @@ const processJSON = async (data) => {
             return {successful: false, error: 'Protokols par šo spēli ir bijis apstrādāts!'};
         }
     } catch (err) {
+        console.error(err);
         return {successful: false, error: 'Notikusi kļūda apstrādājot protokolu!'};
     }
 }
