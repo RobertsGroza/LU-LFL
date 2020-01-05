@@ -15,8 +15,8 @@ const Home = () => {
 
     const loadActualGames = async () => {
         setLoading(true);
-        let teams = await dbClient('/teams');   // Ielasa komandas, lai varētu veiksmīgi atrādīt komandu nosaukumus, kas piedalās aktuālajās spēlēs
-        setTeams(teams.data);
+        let teamsResponse = await dbClient('/teams');   // Ielasa komandas, lai varētu veiksmīgi atrādīt komandu nosaukumus, kas piedalās aktuālajās spēlēs
+        setTeams(teamsResponse.data);
         let games = await dbClient('/games');
         games = games.data.sort((a, b) => (new Date(a.date) > new Date(b.date)) ? -1 : 1);  // Sakārto spēles distošā secībā pēc notikšanas laika
         setActualGames(games.slice(0, 3));  // Uzstāda 3 jaunākās spēles kā aktuālās
