@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 
 const dbClient = axios.create({
     baseURL: process.env.REACT_APP_DB_URL
@@ -13,104 +14,138 @@ const getFileJSON = file => new Promise((resolve) => {
 const fileProcessor = async (fileList) => {
     for (const file of fileList) {
         let data = await getFileJSON(file.originFileObj);
-        await processJSON(data);
+        console.log({data, file});
+        let result = await processJSON(data);
+
+        await dbClient.post('/protocolHistory', {
+            time: moment().format('DD.MM.YYYY HH:mm:ss'),
+            fileName: file.name,
+            status: result.successful ? 'success' : 'error',
+            error: result.error
+        });
     }
 }
 
-const processJSON = async (data) => {
-    // Apstrādājam komandas
-    console.log('data: ', data);
+const processTeam = async (teamData) => {
+    let findTeamResponse = await dbClient.get('/teams', {params: {name: teamData.Nosaukums}});
 
-    let firstTeam = data.Spele.Komanda[0];
-    let secondTeam = data.Spele.Komanda[1];
-
-    // Apstrādājam pirmo komandu
-    let firstTeamRecordResponse = await dbClient.get('/teams', {params: {name: firstTeam.Nosaukums}});
-
-    if (firstTeamRecordResponse.data.length === 0) {
-        let postResponse = await dbClient.post('/teams', {name: firstTeam.Nosaukums});  // Ja datu bāzē nav ieraksta par komandu, tad izveido tādu
-        firstTeam.id = postResponse.data.id;
+    if (findTeamResponse.data.length === 0) {
+        let postResponse = await dbClient.post('/teams', {name: teamData.Nosaukums});  // Ja datu bāzē nav ieraksta par komandu, tad izveido tādu
+        teamData.id = postResponse.data.id;
     } else {
-        firstTeam.id = firstTeamRecordResponse.data[0].id; 
+        teamData.id = findTeamResponse.data[0].id; 
     }
 
-    // Apstrādājam otro komandu
-    let secondTeamRecordResponse = await dbClient.get('/teams', {params: {name: secondTeam.Nosaukums}});
+    return teamData;
+}
 
-    if (secondTeamRecordResponse.data.length === 0) {
-        let postResponse = await dbClient.post('/teams', {name: secondTeam.Nosaukums});  // Ja datu bāzē nav ieraksta par komandu, tad izveido tādu
-        secondTeam.id = postResponse.data.id;
-    } else {
-        secondTeam.id = secondTeamRecordResponse.data[0].id; 
-    }
+const processPlayers = async (playerData, teamId) => {
+    let teamPlayersResponse = await dbClient.get('/players', {params: {teamId: teamId}});   // Iegūst visus komandas datubāzē saglabātos spēlētājus
+    let teamPlayers = teamPlayersResponse.data;
 
-    // Apstrādājam spēlētājus
-    // Pirmās komandas spēlētāji
-    // Datubāzē atrod visus komandas spēlētājus... Tālāk iterē cauri norādītajiem spēlētājiem, un ja spēlētājs netiek atrasts datubāzes komandas spēlētājos, tad tas tiek pievienots
-    let firstTeamPlayersResponse = await dbClient.get('/players', {params: {teamId: firstTeam.id}});
-    let firstTeamPlayers = firstTeamPlayersResponse.data;
-    for (const player of firstTeam.Speletaji.Speletajs) {
-        let playerExists = firstTeamPlayers.find(el => parseInt(el.nr) === parseInt(player.Nr));
+    for (const player of playerData) {
+        let playerExists = teamPlayers.find(el => parseInt(el.nr) === parseInt(player.Nr));
         if (!playerExists) {
             let postResponse = await dbClient.post('/players', {
                 name: player.Vards,
                 lastName: player.Uzvards,
                 nr: player.Nr,
                 role: player.Loma,
-                teamId: firstTeam.id
+                teamId: teamId
             })
-            firstTeamPlayers.push(postResponse.data);   // nodrošina, ka arī jaunie spēlētāji ir ielasīti teamPlayers objektā (vēlāk varēs tikt izmantots statistikas apstrādāšanai)
+            teamPlayers.push(postResponse.data);   // nodrošina, ka arī jaunie spēlētāji ir ielasīti data objektā (vēlāk varēs tikt izmantots statistikas apstrādāšanai)
         }
     }
 
-    // Otrās komandas spēlētāji
-    let secondTeamPlayersResponse = await dbClient.get('/players', {params: {teamId: secondTeam.id}});
-    let secondTeamPlayers = secondTeamPlayersResponse.data;
-    for (const player of secondTeam.Speletaji.Speletajs) {
-        let playerExists = secondTeamPlayers.find(el => parseInt(el.nr) === parseInt(player.Nr));
-        if (!playerExists) {
-            let postResponse = await dbClient.post('/players', {
-                name: player.Vards,
-                lastName: player.Uzvards,
-                nr: player.Nr,
-                role: player.Loma,
-                teamId: secondTeam.id
-            })
-            secondTeamPlayers.push(postResponse);   // nodrošina, ka arī jaunie spēlētāji ir ielasīti teamPlayers objektā (vēlāk varēs tikt izmantots statistikas apstrādāšanai)
-        }
-    }
-    
-    console.log('Teams & players: ', {firstTeam, secondTeam, firstTeamPlayers, secondTeamPlayers});   // Šinī momentā mums vajadzētu būt tā, ka ir pieejami visi spēlētāji jau ar id'iem
+    return teamPlayers;
+}
 
-    // Apstrādājam tiesnešus
-    // Apstrādājam galveno tiesnesi
-    let mainReferee = data.Spele.VT;
-    let assistantReferees = data.Spele.T;
+const procerssMainReferee = async (mainReferee) => {
+    let findMainRefereeResponse = await dbClient.get('/referees', {params: {name: mainReferee.Vards, lastName: mainReferee.Uzvards}});
 
-    let findMainRefereeResponse = await dbClient.get('/referees', {params: {name: data.Spele.VT.Vards, lastName: data.Spele.VT.Uzvards}});
     if (findMainRefereeResponse.data.length === 0) {
-        let postResponse = await dbClient.post('/referees', {name: data.Spele.VT.Vards, lastName: data.Spele.VT.Uzvards});  // Ja datu bāzē nav ieraksta par tiesnesi, tad izveido tādu
+        let postResponse = await dbClient.post('/referees', {name: mainReferee.Vards, lastName: mainReferee.Uzvards});  // Ja datu bāzē nav ieraksta par tiesnesi, tad izveido tādu
         mainReferee.id = postResponse.data.id;
     } else {
         mainReferee.id = findMainRefereeResponse.data[0].id; 
     }
 
-    // Apstrādājma asistentus
-    for (const [index, referee] of assistantReferees.entries()) {
+    return mainReferee;
+}
+
+const processAssistantReferees = async (referees) => {
+    for (const [index, referee] of referees.entries()) {
         let findRefereeResponse = await dbClient.get('/referees', {params: {name: referee.Vards, lastName: referee.Uzvards}});
 
         if (findRefereeResponse.data.length === 0) {
             let postResponse = await dbClient.post('/referees', {name: referee.Vards, lastName: referee.Uzvards});  // Ja datu bāzē nav ieraksta par komandu, tad izveido tādu
-            assistantReferees[index].id = postResponse.data.id;
+            referees[index].id = postResponse.data.id;
         } else {
-            assistantReferees[index].id = findRefereeResponse.data[0].id; 
+            referees[index].id = findRefereeResponse.data[0].id; 
         }
     }
 
-    console.log('refereees: ', {mainReferee, assistantReferees});
+    return referees;
+}
 
-    // Apstrādajam spēles
-    // Spēļu parādīšanos datubāzē jāčeko pēc datuma un pēc abām iesaisītajām komandām
+const processGame = async (gameData, firstTeam, firstTeamPlayers, secondTeam, secondTeamPlayers, mainReferee, assistantReferees) => {
+    console.log({gameData, firstTeam, firstTeamPlayers, secondTeam, secondTeamPlayers});
+
+    let postResponse = await dbClient.post('/games', {
+        date: gameData.Laiks,
+        attendees: gameData.Skatitaji,
+        arena: gameData.Vieta,
+        team1Id: firstTeam.id,
+        team2Id: secondTeam.id,
+        team1Starters: firstTeam.Pamatsastavs.Speletajs.map(el => {
+            let test = firstTeamPlayers.filter(player => parseInt(player.nr) === parseInt(el.Nr))
+            return Array.isArray(test) && test[0] && test[0].id;
+        }),
+        team2Starters: secondTeam.Pamatsastavs.Speletajs.map(el => {
+            let test = secondTeamPlayers.filter(player => parseInt(player.nr) === parseInt(el.Nr))
+            return Array.isArray(test) && test[0] && test[0].id;
+        }),
+        mainRefereeId: mainReferee.id,
+        assistantReferees: assistantReferees.map(ref => ref.id)
+    });
+
+    let dbGameObject = postResponse.data;
+
+    // process game events && stats
+}
+
+const processJSON = async (data) => {
+    try {
+        // Šeit vajadzētu, ka pārbauda iesaistītās komandas un datumu, lai noskaidrotu, vai spēle jau nav ierakstīta datubāzē
+        let firstTeam = data.Spele.Komanda[0];
+        let secondTeam = data.Spele.Komanda[1];
+
+        // Apstrādājam abas komandas un iegūstam to id datubāzē, lai varētu meklēt, vai spēle eksistē
+        firstTeam = await processTeam(firstTeam);
+        secondTeam = await processTeam(secondTeam);
+
+        // Apstrādajam spēles un čeko vai spēle eksistē
+        let findGameResponse = await dbClient.get('/games', {params: {date: data.Spele.Laiks, team1Id: [firstTeam.id, secondTeam.id], team2Id: [firstTeam.id, secondTeam.id]}});
+        
+        // Ja spēle nav apstrādāta, tad veic apstrādi
+        if (findGameResponse.data.length === 0) {
+            // Apstrādājam spēlētājus
+            let firstTeamPlayers = await processPlayers(firstTeam.Speletaji.Speletajs, firstTeam.id);
+            let secondTeamPlayers = await processPlayers(secondTeam.Speletaji.Speletajs, secondTeam.id);
+
+            // Apstrādājam tiesnešus
+            let mainReferee = await procerssMainReferee(data.Spele.VT);
+            let assistantReferees = await processAssistantReferees(data.Spele.T);
+
+            await processGame(data.Spele, firstTeam, firstTeamPlayers, secondTeam, secondTeamPlayers, mainReferee, assistantReferees);
+
+            return {successful: true, error: null};
+        } else {
+            return {successful: false, error: 'Protokols par šo spēli ir bijis apstrādāts!'};
+        }
+    } catch (err) {
+        return {successful: false, error: 'Notikusi kļūda apstrādājot protokolu!'};
+    }
 }
 
 export default fileProcessor;

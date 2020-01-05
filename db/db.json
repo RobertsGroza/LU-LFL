@@ -3,6 +3,9 @@
   "players": [],
   "games": [],
   "referees": [],
+  "gameEvents": [],
   "teamStats": [],
-  "playerStats": []
+  "playerStats": [],
+  "goalieStats": [],
+  "protocolHistory": []
 }
