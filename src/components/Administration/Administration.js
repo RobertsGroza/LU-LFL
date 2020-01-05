@@ -1,12 +1,26 @@
-import React, {useState} from 'react';
-import { Modal, Button, Upload, Icon, Spin } from 'antd';
+import React, {useState, useEffect} from 'react';
+import { Modal, Button, Upload, Icon, Spin, Table, Tag } from 'antd';
 import Container from 'components/Container/Container';
 import FileProcessor from 'utils/fileProcessor';
+import dbClient from 'utils/dbClient';
 
 const Administration = () => {
     const [showFileUploadModal, setShowFileUploadModal] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [fileProcessingInProgress, setFileProcessingInProgress] = useState(false);
+    const [protocolHistoryData, setProtocolHistoryData] = useState([]);
+    const [protocolHistoryLoading, setProtocolHistoryLoading] = useState(false);
+
+    useEffect(() => {
+        loadProtocolHistoryData();
+    }, []);
+
+    const loadProtocolHistoryData = async () => {
+        setProtocolHistoryLoading(true);
+        let protocolHistoryData = await dbClient.get('/protocolHistory?_sort=id&_order=desc');
+        setProtocolHistoryData(protocolHistoryData.data);
+        setProtocolHistoryLoading(false);
+    }
 
     const toggleModal = () => {
         setShowFileUploadModal(!showFileUploadModal);
@@ -18,6 +32,9 @@ const Administration = () => {
         setShowFileUploadModal(false);
         setFileProcessingInProgress(false);
         setFileList([]);
+
+        let protocolHistoryData = await dbClient.get('/protocolHistory?_sort=id&_order=desc');
+        setProtocolHistoryData(protocolHistoryData.data)
     }
 
     const uploadProps = {
@@ -40,7 +57,36 @@ const Administration = () => {
             return false;
         }
     };
-    
+        
+    const columns = [
+        {
+            title: 'Protokols',
+            dataIndex: 'fileName',
+            key: 'fileName',
+        },
+        {
+            title: 'Statuss',
+            dataIndex: 'status',
+            key: 'status',
+            render: status => (
+                <Tag color={status === 'success' ? 'green' : 'volcano'} key={status}>
+                    {status === 'success' ? 'apstrādāts' : 'neapstrādāts'}
+                </Tag>
+            )
+        },
+        {
+            title: 'Kļūda',
+            dataIndex: 'error',
+            key: 'error',
+            render: error => error !== null ? error : '-'
+        },
+        {
+            title: 'Augšupielādes laiks',
+            dataIndex: 'time',
+            key: 'time'
+        }
+    ];
+
     return (
         <Container>
             <h1>Administrācija</h1>
@@ -49,6 +95,14 @@ const Administration = () => {
             <Button type="primary" onClick={() => toggleModal()} icon="upload">
                 Augšupielādēt spēļu protokolus
             </Button>
+
+            <h3 style={{paddingTop: '35px'}}>Protokolu audits:</h3>
+            <Table
+                style={{paddingTop: '5px', paddingBottom: '35px'}}
+                dataSource={protocolHistoryData}
+                columns={columns}
+                loading={protocolHistoryLoading}
+            />
 
             <Modal
                 visible={showFileUploadModal}
