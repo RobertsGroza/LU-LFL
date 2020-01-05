@@ -1,6 +1,6 @@
 import moment from 'moment';
 import dbClient from './dbClient';
-import { processTeam, processPlayers, processMainReferee, processAssistantReferees, processGame } from './gameDataProcessor'
+import { processTeam, processPlayers, processMainReferee, processAssistantReferees, processGame } from './dataProcessor'
 
 const getFileJSON = file => new Promise((resolve) => {
     const reader = new FileReader();
@@ -11,7 +11,6 @@ const getFileJSON = file => new Promise((resolve) => {
 const fileProcessor = async (fileList) => {
     for (const file of fileList) {
         let data = await getFileJSON(file.originFileObj);
-        console.log({data, file});
         let result = await processJSON(data);
 
         await dbClient.post('/protocolHistory', {
@@ -34,7 +33,12 @@ const processJSON = async (data) => {
         secondTeam = await processTeam(secondTeam);
 
         // Apstrādajam spēles un čeko vai spēle eksistē
-        let findGameResponse = await dbClient.get('/games', {params: {date: data.Spele.Laiks, team1Id: [firstTeam.id, secondTeam.id], team2Id: [firstTeam.id, secondTeam.id]}});
+        let findGameResponse = await dbClient.get('/games', {params: {
+            date: data.Spele.Laiks,
+            team1Id: [firstTeam.id, secondTeam.id],
+            team2Id: [firstTeam.id, secondTeam.id],
+            deleted: false
+        }});
         
         // Ja spēle nav apstrādāta, tad veic apstrādi
         if (findGameResponse.data.length === 0) {

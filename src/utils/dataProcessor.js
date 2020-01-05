@@ -1,4 +1,5 @@
 import dbClient from './dbClient';
+import { processFoul, processGoal, processSubstitution, processTeamAndPlayerStats } from './statsProcessor';
 
 export const processTeam = async (teamData) => {
     let findTeamResponse = await dbClient.get('/teams', {params: {name: teamData.Nosaukums}});
@@ -38,22 +39,22 @@ export const processPlayers = async (playerData, teamId) => {
                 name: player.Vards,
                 lastName: player.Uzvards,
                 nr: player.Nr,
-                role: player.Loma,
+                position: player.Loma,
                 teamId: teamId
             })
 
             // Izveidojam playerStats
             await dbClient.post('/playerStats', {
                 playerId: postResponse.data.id,
+                teamId: teamId,
                 position: player.Loma,
                 gamesPlayed: 0,
                 gamesStarted: 0,
-                minutesPlayed: 0,
+                timePlayed: "00:00",
                 goals: 0,
                 assists: 0,
                 yellowCards: 0,
-                redCards: 0,
-                goalsAgainst: 0 // Vārstargu statistikas rādītājs - ielaistie vārti
+                redCards: 0
             })
 
             teamPlayers.push(postResponse.data);   // nodrošina, ka arī jaunie spēlētāji ir ielasīti data objektā (vēlāk varēs tikt izmantots statistikas apstrādāšanai)
@@ -92,8 +93,6 @@ export const processAssistantReferees = async (referees) => {
 }
 
 export const processGame = async (gameData, firstTeam, firstTeamPlayers, secondTeam, secondTeamPlayers, mainReferee, assistantReferees) => {
-    console.log({gameData, firstTeam, firstTeamPlayers, secondTeam, secondTeamPlayers});
-
     let postResponse = await dbClient.post('/games', {
         date: gameData.Laiks,
         attendees: gameData.Skatitaji,
@@ -109,42 +108,63 @@ export const processGame = async (gameData, firstTeam, firstTeamPlayers, secondT
             return Array.isArray(test) && test[0] && test[0].id;
         }),
         mainRefereeId: mainReferee.id,
-        assistantReferees: assistantReferees.map(ref => ref.id)
+        assistantReferees: assistantReferees.map(ref => ref.id),
+        deleted: false
     });
 
     let dbGameObject = postResponse.data;
 
-    console.log('aaaa: ', dbGameObject);
-
     try {
-
-        // maiņas
         let firstTeamSubstitutions = gameData.Komanda[0].Mainas;
+        let secondTeamSubstitutions = gameData.Komanda[1].Mainas;
+        let firstTeamFouls = gameData.Komanda[0].Sodi;
+        let secondTeamFouls = gameData.Komanda[1].Sodi;
+        let firstTeamGoals = gameData.Komanda[0].Varti;
+        let secondTeamGoals = gameData.Komanda[1].Varti;
+
+        // Apstrādā abu komandu maiņas
         if (typeof(firstTeamSubstitutions) === "object") {
             if (Array.isArray(firstTeamSubstitutions.Maina)) {
                 for (const substitution of firstTeamSubstitutions.Maina) {
-                    await processSubstitution(dbGameObject.id, firstTeam.id, substitution);
+                    await processSubstitution(dbGameObject.id, firstTeam.id, firstTeamPlayers, substitution);
                 }
             } else {
-                await processSubstitution(dbGameObject.id, firstTeam.id, firstTeamSubstitutions.Maina);
-            }
-        }
-        // maiņas
-        let secondTeamSubstitutions = gameData.Komanda[1].Mainas;
-        if (typeof(secondTeamSubstitutions) === "object") {
-            if (Array.isArray(secondTeamSubstitutions.Maina)) {
-                for (const substitution of secondTeamSubstitutions.Maina) {
-                    await processSubstitution(dbGameObject.id, secondTeam.id, substitution);
-                }
-            } else {
-                await processSubstitution(dbGameObject.id, secondTeam.id, secondTeamSubstitutions.Maina);
+                await processSubstitution(dbGameObject.id, firstTeam.id, firstTeamPlayers, firstTeamSubstitutions.Maina);
             }
         }
 
-        // apstrādā pirmās komandas gameEvents
-        // sodi
-        // vārti
-        let firstTeamGoals = gameData.Komanda[0].Varti;
+        if (typeof(secondTeamSubstitutions) === "object") {
+            if (Array.isArray(secondTeamSubstitutions.Maina)) {
+                for (const substitution of secondTeamSubstitutions.Maina) {
+                    await processSubstitution(dbGameObject.id, secondTeam.id, secondTeamPlayers, substitution);
+                }
+            } else {
+                await processSubstitution(dbGameObject.id, secondTeam.id, secondTeamPlayers, secondTeamSubstitutions.Maina);
+            }
+        }
+
+        // Apstrādā abu komandu noteikumu pārkāpumus
+        if (typeof(firstTeamFouls) === "object") {
+            if (Array.isArray(firstTeamFouls.Sods)) {
+                for (const foul of firstTeamFouls.Sods) {
+                    await processFoul(dbGameObject.id, firstTeam.id, firstTeamPlayers, foul);
+                }
+            } else {
+                await processFoul(dbGameObject.id, firstTeam.id, firstTeamPlayers, firstTeamFouls.Sods);
+            }
+        }
+
+        if (typeof(secondTeamFouls) === "object") {
+            if (Array.isArray(secondTeamFouls.Sods)) {
+                for (const foul of secondTeamFouls.Sods) {
+                    await processFoul(dbGameObject.id, secondTeam.id, secondTeamPlayers, foul);
+                }
+            } else {
+                await processFoul(dbGameObject.id, secondTeam.id, secondTeamPlayers, secondTeamFouls.Sods);
+            }
+        }
+
+        // apstrādā abu komandu gūtos vārtus
         if (typeof(firstTeamGoals) === "object") {
             if (Array.isArray(firstTeamGoals.VG)) {
                 for (const goal of firstTeamGoals.VG) {
@@ -155,12 +175,6 @@ export const processGame = async (gameData, firstTeam, firstTeamPlayers, secondT
             }
         }
 
-
-
-        // apstrādā otrās komandas gameEvents
-        // sodi
-        // vārti
-        let secondTeamGoals = gameData.Komanda[1].Varti;
         if (typeof(secondTeamGoals) === "object") {
             if (Array.isArray(secondTeamGoals.VG)){
                 for (const goal of secondTeamGoals.VG) {
@@ -171,74 +185,14 @@ export const processGame = async (gameData, firstTeam, firstTeamPlayers, secondT
             }
         }
 
-
-        // Apstrādā goalieStats
-        // Salīdzina abu komandu sniegumus un papildina teamStats
+        await processTeamAndPlayerStats(dbGameObject);
     } catch (err) {
-        await dbClient.delete('/games/' + dbGameObject.id); // Ja ir notikusi kļūda apstrādājot spēles notikumus, tad izdzēš spēli, lai protokolu būtu iespējams augšupielādēt vēlreiz
+        // Ja ir notikusi kļūda apstrādājot spēles notikumus, tad izdzēš spēli, lai protokolu būtu iespējams augšupielādēt vēlreiz, bet izdzēš "mīksti", lai jaunās spēles id būtu atšķirīgs
+        await dbClient.patch(`/games/${dbGameObject.id}`, {...dbGameObject, deleted: true});
+
         console.error(err);
         throw err;
     }
-}
-
-const processSubstitution = async (gameId, teamId, substitutionData) => {
-    console.log({gameId, teamId, substitutionData});
-
-    // Izveido maiņas notikumu
-    await dbClient.post('/gameEvents', {
-        gameId: gameId,
-        teamId: teamId,
-        offPlayer: substitutionData.Nr1,
-        onPlayer: substitutionData.Nr2,
-        type: 'S',
-        time: substitutionData.Laiks
-    });
-}
-
-const processGoal = async (gameId, teamId, players, goalData) => {
-    console.log('gooal: ', {players, goalData});
-    let assists = [];
-
-    // Apstrādā rezultatīvās piespēles
-    if (goalData.P && typeof (goalData.P) === "object") {
-        if (Array.isArray(goalData.P)) {
-            for (const assist of goalData.P) {
-                assists.push(players.filter(player => parseInt(assist.Nr) === parseInt(player.nr))[0].id);
-            }
-        } else {
-            assists.push(players.filter(player => parseInt(goalData.P.Nr) === parseInt(player.nr))[0].id);
-        }
-    }
-
-    // Izveido vārtu gūšanas notikumu
-    await dbClient.post('/gameEvents', {
-        gameId: gameId,
-        teamId: teamId,
-        playerId: players.filter(player => parseInt(goalData.Nr) === parseInt(player.nr))[0].id,
-        type: 'G',
-        time: goalData.Laiks,
-        assists: assists,
-        goalType: goalData.Sitiens
-    });
-
-    // Apstrādā spēlētāju statistikas - vārti un piespēles
-    for (const assister of assists) {
-        let statsBeforeRequest = await dbClient.get('/playerStats', {params: {playerId: assister}});
-        statsBeforeRequest = statsBeforeRequest.data[0];
-        console.log('stats before request: ', statsBeforeRequest);
-        await dbClient.patch(`/playerStats/${statsBeforeRequest.id}`, {...statsBeforeRequest, assists: statsBeforeRequest.assists + 1});
-    }
-
-    // Vārtus ieskaita vārtu guvējam
-
-    // Vārtu zaudējumu ieskaita vārstargam, kas tajā brīdī atrodas laukumā
-}
-
-/**
- * Nosaka, vai pirmais ievadītais laiks ir pēc otrā laika
- */
-const compareTime = (firstTime, secondTime) => {
-    console.log({firstTime, secondTime});
 }
 
 export default {
