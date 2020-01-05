@@ -82,16 +82,11 @@ export const processTeamAndPlayerStats = async (gameData) => {
         timePlayed: gameWithOvertime ? allGoals[allGoals.length - 1].time : '60:00'
     };
 
-    console.log('game stats: ', {allEvents, allGoals, allSubstitutions, allFouls});
-    console.log('statistics before operations: ', {firstTeamStats, secondTeamStats, firstTeamPlayerStats, secondTeamPlayerStats});
-
     // Statistikas apstrāde
     firstTeamStats = processTeamStats(firstTeamStats, firstTeamGoals, secondTeamGoals, gameWithOvertime);
     secondTeamStats = processTeamStats(secondTeamStats, secondTeamGoals, firstTeamGoals, gameWithOvertime);
     firstTeamPlayerStats = processPlayerStats(firstTeamPlayerStats, gameData, gameData.team1Starters, allGoals, allSubstitutions, allFouls);
     secondTeamPlayerStats = processPlayerStats(secondTeamPlayerStats, gameData, gameData.team2Starters, allGoals, allSubstitutions, allFouls);
-
-    console.log('statistics after operations: ', {firstTeamStats, secondTeamStats, firstTeamPlayerStats, secondTeamPlayerStats});
 
     // Augšupielādē jaunos statistikas rādītājus
     await dbClient.patch(`/games/${gameData.id}`, gameData);

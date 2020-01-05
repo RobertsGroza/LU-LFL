@@ -184,8 +184,6 @@ export const processGame = async (gameData, firstTeam, firstTeamPlayers, secondT
                 await processGoal(dbGameObject.id, secondTeam.id, secondTeamPlayers, secondTeamGoals.VG);
             }
         }
-
-        await processTeamAndPlayerStats(dbGameObject);
     } catch (err) {
         // Ja ir notikusi kļūda apstrādājot spēles notikumus, tad izdzēš spēli, lai protokolu būtu iespējams augšupielādēt vēlreiz, bet izdzēš "mīksti", lai jaunās spēles id būtu atšķirīgs
         await dbClient.patch(`/games/${dbGameObject.id}`, {...dbGameObject, deleted: true});
@@ -193,6 +191,8 @@ export const processGame = async (gameData, firstTeam, firstTeamPlayers, secondT
         console.error(err);
         throw err;
     }
+
+    await processTeamAndPlayerStats(dbGameObject);
 }
 
 export default {

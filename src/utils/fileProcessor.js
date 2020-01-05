@@ -9,7 +9,9 @@ const getFileJSON = file => new Promise((resolve) => {
 });
 
 const fileProcessor = async (fileList) => {
-    for (const file of fileList) {
+    for (const [index, file] of fileList.entries()) {
+        console.info(`Apstrādā ${index + 1}. protokolu no ${fileList.length}`);
+
         let data = await getFileJSON(file.originFileObj);
         let result = await processJSON(data);
 
