@@ -1,3 +1,5 @@
+import React from 'react';
+import { Tooltip } from 'antd';
 import {compareTime} from 'utils/timeMethods';
 
 export const scoringLeadersColumns = [
@@ -76,43 +78,43 @@ export const playerStatsColumns = (teams) => [
         onFilter: (value, record) => record.position === value
     },
     {
-        title: 'P',
+        title: <Tooltip title="Piespēles">P</Tooltip>,
         dataIndex: 'assists',
         key: 'assists',
         sorter: (a, b) => a.assists - b.assists,
     },
     {
-        title: 'V',
+        title: <Tooltip title="Vārti">V</Tooltip>,
         dataIndex: 'goals',
         key: 'goals',
         sorter: (a, b) => a.goals - b.goals,
     },
     {
-        title: 'S',
+        title: <Tooltip title="Spēles">S</Tooltip>,
         dataIndex: 'gamesPlayed',
         key: 'gamesPlayed',
         sorter: (a, b) => a.gamesPlayed - b.gamesPlayed,
     },
     {
-        title: 'SS',
+        title: <Tooltip title="Iesāktās spēles sākumsastāvā">SS</Tooltip>,
         dataIndex: 'gamesStarted',
         key: 'gamesStarted',
         sorter: (a, b) => a.gamesStarted - b.gamesStarted,
     },
     {
-        title: 'L',
+        title: <Tooltip title="Laukumā pavadītais laiks">L</Tooltip>,
         dataIndex: 'timePlayed',
         key: 'timePlayed',
         sorter: (a, b) => compareTime(a.timePlayed, b.timePlayed) ? 1 : -1
     },
     {
-        title: 'DZK',
+        title: <Tooltip title="Dzeltenās kartītes">DZK</Tooltip>,
         dataIndex: 'yellowCards',
         key: 'yellowCards',
         sorter: (a, b) => a.yellowCards - b.yellowCards,
     },
     {
-        title: 'SK',
+        title: <Tooltip title="Sarkanās kartītes">SK</Tooltip>,
         dataIndex: 'redCards',
         key: 'redCards',
         sorter: (a, b) => a.yellowCards - b.yellowCards,

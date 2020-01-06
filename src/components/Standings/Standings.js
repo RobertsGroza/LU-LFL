@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import dbClient from 'utils/dbClient';
-import { Table } from 'antd';
+import { Table, Tooltip } from 'antd';
 
 const Standings = () => {
     const [tableData, setTableData] = useState([]);
@@ -27,37 +27,37 @@ const Standings = () => {
             key: 'teamName',
         },
         {
-            title: 'S',
+            title: <Tooltip title="Spēles">S</Tooltip>,
             dataIndex: 'gamesPlayed',
             key: 'gamesPlayed'
         },
         {
-            title: 'U',
+            title: <Tooltip title="Uzvaras">U</Tooltip>,
             dataIndex: 'wins',
             key: 'wins'
         },
         {
-            title: 'UP',
+            title: <Tooltip title="Uzvaras papildlaikā">UP</Tooltip>,
             dataIndex: 'winsOT',
             key: 'winsOT'
         },
         {
-            title: 'ZP',
+            title: <Tooltip title="Zaudējumi papildlaikā">ZP</Tooltip>,
             dataIndex: 'losesOT',
             key: 'losesOT'
         },
         {
-            title: 'Z',
+            title: <Tooltip title="Zaudējumi">Z</Tooltip>,
             dataIndex: 'loses',
             key: 'loses'
         },
         {
-            title: 'V',
+            title: <Tooltip title="Gūtie vārti">GV</Tooltip>,
             dataIndex: 'goals',
             key: 'goals'
         },
         {
-            title: 'ZV',
+            title: <Tooltip title="Zaudētie vārti">ZV</Tooltip>,
             dataIndex: 'goalsAgainst',
             key: 'goalsAgainst'
         },
