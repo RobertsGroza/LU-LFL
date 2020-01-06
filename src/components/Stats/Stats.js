@@ -9,6 +9,7 @@ const Stats = () => {
     const [scoringLeaders, setScoringLeaders] = useState([]);
     const [rudestPlayers, setRudestPlayers] = useState([]);
     const [playerStats, setPlayerStats] = useState([]);
+    const [teams, setTeams] = useState([]);
     const [scoringLeadersLoading, setScoringLeadersLoading] = useState(false);
     const [rudestPlayersLoading, setRudestPlayersLoading] = useState(false);
     const [playerStatsLoading, setPlayerStatsLoading] = useState(false);
@@ -59,7 +60,26 @@ const Stats = () => {
     }
 
     const loadPlayerStats = async() => {
+        setPlayerStatsLoading(true);
+        let players = await dbClient('/players');
+        let teams = await dbClient('/teams');
+        let playerStatsResponse = await dbClient('/playerStats?_sort=goals,assists&_order=desc,desc');    // Iegūst Visu spēlētāju statistikas rādītājus dilstošā secībā pēc vārtiem, piespēlēm
+        players = players.data;
+        teams = teams.data;
+        playerStatsResponse = playerStatsResponse.data;
 
+        setPlayerStats(playerStatsResponse.map((el, index) => {
+            let player = players.filter(player => player.id === el.playerId)[0];
+            let team = teams.filter(team => team.id === el.teamId)[0];
+            return ({
+                ...el,
+                place: index + 1,
+                player: `${player.name} ${player.lastName}`,
+                team: team.name
+            });
+        }));
+        setTeams(teams);
+        setPlayerStatsLoading(false);
     }
 
     const tabChanged = (key) => {
@@ -103,9 +123,10 @@ const Stats = () => {
                 <Table
                     style={{paddingTop: '5px', paddingBottom: '35px'}}
                     dataSource={playerStats}
-                    columns={playerStatsColumns}
+                    columns={playerStatsColumns(teams)}
                     loading={playerStatsLoading}
                     rowKey='id'
+                    size="middle"
                 />
             </TabPane>
         </Tabs>

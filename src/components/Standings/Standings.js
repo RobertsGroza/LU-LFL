@@ -27,42 +27,42 @@ const Standings = () => {
             key: 'teamName',
         },
         {
-            title: 'GP',
+            title: 'S',
             dataIndex: 'gamesPlayed',
             key: 'gamesPlayed'
         },
         {
-            title: 'W',
+            title: 'U',
             dataIndex: 'wins',
             key: 'wins'
         },
         {
-            title: 'OTW',
+            title: 'UP',
             dataIndex: 'winsOT',
             key: 'winsOT'
         },
         {
-            title: 'OTL',
+            title: 'ZP',
             dataIndex: 'losesOT',
             key: 'losesOT'
         },
         {
-            title: 'L',
+            title: 'Z',
             dataIndex: 'loses',
             key: 'loses'
         },
         {
-            title: 'G',
+            title: 'V',
             dataIndex: 'goals',
             key: 'goals'
         },
         {
-            title: 'GA',
+            title: 'ZV',
             dataIndex: 'goalsAgainst',
             key: 'goalsAgainst'
         },
         {
-            title: 'PTS',
+            title: 'Punkti',
             dataIndex: 'points',
             key: 'points'
         }

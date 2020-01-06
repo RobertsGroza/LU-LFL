@@ -31,7 +31,7 @@ const Home = () => {
         <Spin spinning={loading} size="large">
             {actualGames.length > 0 ?
                 <>
-                    <h1 style={{fontSize: '48px', textAlign: 'center'}}>Aktuālās spēles</h1>
+                    <h1 style={{fontSize: '48px', textAlign: 'center'}}>3 pēdējās spēles</h1>
                     {actualGames.map(game =>
                         <div className="game-row">
                             <h5>{moment(game.date).format("DD.MM.YYYY")}</h5>
