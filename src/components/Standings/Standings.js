@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import dbClient from 'utils/dbClient';
-import { Spin, Table } from 'antd';
+import { Table } from 'antd';
 
 const Standings = () => {
     const [tableData, setTableData] = useState([]);
@@ -78,7 +78,6 @@ const Standings = () => {
             rowKey='id'
             pagination={false}
         />
-
     </>
 }
 
