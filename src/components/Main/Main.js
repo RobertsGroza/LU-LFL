@@ -33,6 +33,7 @@ const Main = ({ history }) => {
           theme="dark"
           mode="horizontal"
           style={{ lineHeight: '64px' }}
+          selectable={false}
         >
           <Menu.Item key="1">
               <NavLink to="/">
@@ -64,7 +65,13 @@ const Main = ({ history }) => {
                 <Icon type="logout" />
                 Iziet
               </Menu.Item>
-            : null
+            :               
+              <Menu.Item key="5" style={{float: 'right'}}>
+                <NavLink to="/login">
+                  <Icon type="login" />
+                  Ienākt
+                </NavLink>
+              </Menu.Item>
           }
         </Menu>
       </Header>
