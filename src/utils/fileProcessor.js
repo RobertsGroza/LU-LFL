@@ -2,12 +2,18 @@ import moment from 'moment';
 import dbClient from './dbClient';
 import { processTeam, processPlayers, processMainReferee, processAssistantReferees, processGame } from './dataProcessor'
 
+/**
+ * Metode faila JSON satura izgūšanai
+ */
 const getFileJSON = file => new Promise((resolve) => {
     const reader = new FileReader();
     reader.readAsText(file);
     reader.onload = () => resolve(JSON.parse(reader.result));
 });
 
+/**
+ * Pievienoto failu apstrāde
+ */
 const fileProcessor = async (fileList) => {
     for (const [index, file] of fileList.entries()) {
         console.info(`Apstrādā ${index + 1}. protokolu no ${fileList.length}`);
@@ -24,6 +30,9 @@ const fileProcessor = async (fileList) => {
     }
 }
 
+/**
+ * No faila izgūtā JSON apstrāde
+ */
 const processJSON = async (data) => {
     try {
         // Šeit vajadzētu, ka pārbauda iesaistītās komandas un datumu, lai noskaidrotu, vai spēle jau nav ierakstīta datubāzē

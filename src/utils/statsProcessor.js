@@ -1,6 +1,9 @@
 import dbClient from './dbClient';
 import {compareTime, subtractTime, addTime} from './timeMethods';
 
+/**
+ * Apstrādā maiņas notikumu
+ */
 export const processSubstitution = async (gameId, teamId, players, substitutionData) => {
     let offPlayer = players.filter(player => parseInt(substitutionData.Nr1) === parseInt(player.nr))[0].id;
     let onPlayer = players.filter(player => parseInt(substitutionData.Nr2) === parseInt(player.nr))[0].id;
@@ -15,6 +18,9 @@ export const processSubstitution = async (gameId, teamId, players, substitutionD
     });
 }
 
+/**
+ * Apstrādā noteikumu pārkāpuma notikumu
+ */
 export const processFoul = async (gameId, teamId, players, foulData) => {
     let playerId = players.filter(player => parseInt(foulData.Nr) === parseInt(player.nr))[0].id;
 
@@ -27,6 +33,9 @@ export const processFoul = async (gameId, teamId, players, foulData) => {
     });
 }
 
+/**
+ * Apstrādā vārtu gūšanas notikumu
+ */
 export const processGoal = async (gameId, teamId, players, goalData) => {
     let assists = [];
     let scorersId = players.filter(player => parseInt(goalData.Nr) === parseInt(player.nr))[0].id;
@@ -54,6 +63,9 @@ export const processGoal = async (gameId, teamId, players, goalData) => {
     });
 }
 
+/**
+ * Apstrādā komandu un spēlētāju statistikas rādītājus
+ */
 export const processTeamAndPlayerStats = async (gameData) => {
     // No datu bāzes ielasa aktuālos datus - spēles notikumus, komandu statistikas un komandu spēlētāju statistikas
     let getAllGameEventsResponse = await dbClient.get(`/games/${gameData.id}/gameEvents`);
@@ -103,6 +115,9 @@ export const processTeamAndPlayerStats = async (gameData) => {
     }
 }
 
+/**
+ * Apstrādā komandas statistikas rādītājus
+ */
 const processTeamStats = (teamStats, teamGoals, opponentGoals, gameWithOvertime) => {
     teamStats = {
         ...teamStats,
@@ -128,6 +143,9 @@ const processTeamStats = (teamStats, teamGoals, opponentGoals, gameWithOvertime)
     return teamStats;
 }
 
+/**
+ * Apstrādā spēlētāja statistikas rādītājus
+ */
 const processPlayerStats = (playerStats, gameData, starters, allGoals, allSubstitutions, allFouls) => {
     for (const [index, player] of playerStats.entries()) {
         let playingStartTime = null;    // laiks, kurā spēlētājs iesaistījies spēlē

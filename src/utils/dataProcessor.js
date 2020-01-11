@@ -1,6 +1,9 @@
 import dbClient from './dbClient';
 import { processFoul, processGoal, processSubstitution, processTeamAndPlayerStats } from './statsProcessor';
 
+/**
+ * Ielasīto komandu apstrāde
+ */
 export const processTeam = async (teamData) => {
     let findTeamResponse = await dbClient.get('/teams', {params: {name: teamData.Nosaukums}});
 
@@ -28,6 +31,9 @@ export const processTeam = async (teamData) => {
     return teamData;
 }
 
+/**
+ * Ielasīto spēlētāju apstrāde
+ */
 export const processPlayers = async (playerData, teamId) => {
     let teamPlayersResponse = await dbClient.get('/players', {params: {teamId: teamId}});   // Iegūst visus komandas datubāzē saglabātos spēlētājus
     let teamPlayers = teamPlayersResponse.data;
@@ -64,6 +70,9 @@ export const processPlayers = async (playerData, teamId) => {
     return teamPlayers;
 }
 
+/**
+ * Ielasītā galvenā tiesneša apstrāde
+ */
 export const processMainReferee = async (mainReferee) => {
     let findMainRefereeResponse = await dbClient.get('/referees', {params: {name: mainReferee.Vards, lastName: mainReferee.Uzvards}});
 
@@ -77,6 +86,9 @@ export const processMainReferee = async (mainReferee) => {
     return mainReferee;
 }
 
+/**
+ * Ielasīto galvenā tiesneša palīgu apstrāde
+ */
 export const processAssistantReferees = async (referees) => {
     for (const [index, referee] of referees.entries()) {
         let findRefereeResponse = await dbClient.get('/referees', {params: {name: referee.Vards, lastName: referee.Uzvards}});
@@ -92,6 +104,9 @@ export const processAssistantReferees = async (referees) => {
     return referees;
 }
 
+/**
+ * Ielasīto spēles datu apstrāde
+ */
 export const processGame = async (gameData, firstTeam, firstTeamPlayers, secondTeam, secondTeamPlayers, mainReferee, assistantReferees) => {
     let postResponse = await dbClient.post('/games', {
         date: gameData.Laiks,
