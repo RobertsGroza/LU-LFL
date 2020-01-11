@@ -24,6 +24,9 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "engines": {
+    "yarn": "1.21.1"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
